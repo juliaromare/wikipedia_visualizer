@@ -1,1 +1,7 @@
-Please use this file to answer the questions described in the readme.
+Please use this file to answer the questions described in the readme:
+
+1. In your own words describe the purpose of the LocalPage, LocalPageBox, and LocalPagePopularity classes. What do each of these represent and what is their purpose?
+2. How do you get a single LocalPage for a specific article in a language?
+3. How do you get all LocalPages in a language?
+4. Given a LocalPage in some Language (e.g. Apple in Simple English), how do you get the LocalPages in other languages linked to that LocalPage?
+5. Are there any methods that help you understand the "popularity" of a LocalPage (hint: yes)?
