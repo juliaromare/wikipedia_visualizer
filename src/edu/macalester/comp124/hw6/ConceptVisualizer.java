@@ -36,12 +36,14 @@ public class ConceptVisualizer extends GraphicsProgram {
     private WikAPIdiaWrapper wp;
 
 
+    //A LocalPage of a reference of the last page being hovered over.
     private LocalPage lastPage;
 
     private LanguageBoxes simpleBoxes;
     private LanguageBoxes latinBoxes;
     private LanguageBoxes hindiBoxes;
 
+    //A List of Arcs which represents the arcs that link between the page being hovered over to other pages.
     private List<Arcs> listArcs;
 
     // Descriptive label
