@@ -1,7 +1,41 @@
 Please use this file to answer the questions described in the readme:
 
 1. In your own words describe the purpose of the LocalPage, LocalPageBox, and LocalPagePopularity classes. What do each of these represent and what is their purpose?
+
+LocalPage holds information and specifies a Wikipedia page such as what Language it’s in, title and a specific ID.
+
+LocalPageBox is a GCompound. It has instances of LocalPage, Color and a GRect. Its constructor sets these instance
+instance variable by setting LocalPage and Color to two parameters and by creating a Grect which it then adds.
+It has two instance methods to get the LocalPage associated with the LocalPageBox and to change the fillColor of the GRect.
+Basically LocalPageBox is a GRect with a color which has an associated LocalPage with it.
+
+LocalPagePopularity implements in the Comparable interface. It has two instance variables: a LocalPage and an integer.
+The constructor sets the instance variables based on the input. It has three methods: two getter methods to get the
+LocalPage and integer of the instance of the LocalPagePopularity. It also overrides the compareTo method to compare how
+an input of an instance of LocalPagePopularity compares to this LocalPagePopularity. In short, LocalPagePopularity keeps
+track of the popularity of a LocalPage and how it compares to other instances of LocalPage.
+
+
 2. How do you get a single LocalPage for a specific article in a language?
+
+The WikAPIdiaWrapper class has the method getLocalPageByTitle and returns a local page with a particular title.
+Its inputs are a Language and a String, indicating the title.
+
+
 3. How do you get all LocalPages in a language?
+
+The WikAPIdiaWrapper class has the method getLocalPages which returns a List of LocalPage and ”returns a list of ALL the
+local pages in a particular language.” The desired language is determined by input parameter.
+
+
 4. Given a LocalPage in some Language (e.g. Apple in Simple English), how do you get the LocalPages in other languages linked to that LocalPage?
+
+The WikAPIdiaWrapper class has the method getInOtherLanguages which takes in a LocalPage as a parameter. It ”returns a list
+of the pages that represent the same concept in other languages”.
+
+
 5. Are there any methods that help you understand the "popularity" of a LocalPage (hint: yes)?
+Assuming that the popularity of an article is associated with how many other local pages that are linked to it, the WikAPIdiaWrapper
+class’s method getLocalPageLinks ”returns a list of all the local pages in the same language that are linked to from a particular page.”
+However, the PopularArticleAnalyzer class has the method getMostPopular() that returns the X most popular articles in a specified
+language depending on its input. This method returns a list of these local pages.

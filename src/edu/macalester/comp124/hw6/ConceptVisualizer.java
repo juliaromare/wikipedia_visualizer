@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -20,7 +22,7 @@ import java.util.List;
  * This class MUST be run as a Java application (ConceptVisualizer.main()).
  * This class MUST be run from the module directory.
  *
- * @author Shilad Sen
+ * @author Shilad Sen (additions by Julia Romare)
  */
 public class ConceptVisualizer extends GraphicsProgram {
     private static final int PAGES_PER_LANG = 30;
@@ -33,9 +35,14 @@ public class ConceptVisualizer extends GraphicsProgram {
     // The Wikapidia API object
     private WikAPIdiaWrapper wp;
 
+
+    private LocalPage lastPage;
+
     private LanguageBoxes simpleBoxes;
     private LanguageBoxes latinBoxes;
     private LanguageBoxes hindiBoxes;
+
+    private List<Arcs> listArcs;
 
     // Descriptive label
     private FancyLabel label;
@@ -69,31 +76,138 @@ public class ConceptVisualizer extends GraphicsProgram {
         setSize(800, 400);
     }
 
+
     @Override
     public void mouseMoved(MouseEvent e) {
         LocalPage hoverPage = getPageAt(e.getX(), e.getY());
 
+
+        if(lastPage != null){
+            lastPage = hoverPage;
+            for(Arcs arc : listArcs){
+                this.remove(arc);
+            }
+            listArcs = new ArrayList<>();
+
+        }
         if (hoverPage == null) {
             simpleBoxes.unhighlight();
             latinBoxes.unhighlight();
             hindiBoxes.unhighlight();
             label.setText("Hover over a title to analyze it");
+
         } else {
+            lastPage = hoverPage;
             List<LocalPage> pages = null;
             String description = "";
 
             System.out.println("You hovered over " + hoverPage);
-            // TODO:
-            // Get pages representing the same concept in other languages.
-            // Build up a textual description of the pages in each language.
-            // You can insert line breaks in your textual description using newlines ("\n").
+            pages = wp.getInOtherLanguages(hoverPage);
+
+            for(LocalPage pageInLang : pages){
+                description = description + pageInLang.getLanguage().toString() + ": " + pageInLang.getTitle().toString() + "\n";
+
+            }
 
             label.setText(description);
 
             simpleBoxes.highlightPages(pages);
             latinBoxes.highlightPages(pages);
             hindiBoxes.highlightPages(pages);
+
+            this.drawArcs(hoverPage);
         }
+
+    }
+
+
+    /**
+     * Draws arcs from the LocalPage that is being hovered over to pages it has links to.
+     * @param hoverPage the LocalPage which is being hovered over.
+     */
+    private void drawArcs(LocalPage hoverPage){
+        List<LocalPage> linkages = wp.getLocalPageLinks(hoverPage);
+        LanguageBoxes langBoxes = findLangBoxes(hoverPage);
+        List<LocalPageBox> linkPageBoxes = new ArrayList<LocalPageBox>();
+        listArcs= new ArrayList<Arcs>();
+        for(LocalPageBox localPageBox : langBoxes.getBoxes()){
+            if(linkages.contains(localPageBox.getPage())){
+                linkPageBoxes.add(localPageBox);
+            }
+        }
+
+        LocalPageBox hoverPageBox = new LocalPageBox(Color.DARK_GRAY, hoverPage);
+
+        for(LocalPageBox localPageBox : langBoxes.getBoxes()){
+            if(hoverPage.equals(localPageBox.getPage())){
+                hoverPageBox = localPageBox;
+            }
+        }
+
+
+        for(LocalPageBox box : linkPageBoxes){
+            if(box.getX()>hoverPageBox.getX()){
+                if(hoverPage.getLanguage() == LATIN){
+                    Arcs arc = new Arcs(hoverPageBox, box, 27, 260);
+                    this.add(arc);
+                    listArcs.add(arc);
+                }
+                if(hoverPage.getLanguage() == HINDI){
+                    Arcs arc = new Arcs(hoverPageBox, box, 27, 186);
+                    this.add(arc);
+                    listArcs.add(arc);
+                }
+                if(hoverPage.getLanguage() == SIMPLE){
+                    Arcs arc = new Arcs(hoverPageBox, box, 27, 110);
+                    this.add(arc);
+                    listArcs.add(arc);
+                }
+
+            }
+            else{
+                if(hoverPage.getLanguage() == SIMPLE){
+                    Arcs arc = new Arcs(box, hoverPageBox, 27, 110);
+                    this.add(arc);
+                    listArcs.add(arc);
+                }
+                if(hoverPage.getLanguage() == HINDI){
+                    Arcs arc = new Arcs(box, hoverPageBox, 27, 186);
+                    this.add(arc);
+                    listArcs.add(arc);
+                }
+                if(hoverPage.getLanguage() == LATIN){
+                    Arcs arc = new Arcs(box, hoverPageBox, 27, 260);
+                    this.add(arc);
+                    listArcs.add(arc);
+                }
+
+
+            }
+        }
+
+    }
+
+
+
+    /**
+     * Finds the LanguageBoxes of the same language of a LocalPage's.
+     * @param page a LocalPage which we want to get the linkages to.
+     * @return LanguagesBoxes that have pages of the same language of the input.
+     */
+    private LanguageBoxes findLangBoxes(LocalPage page){
+        if(page.getLanguage().equals(SIMPLE)){
+            return simpleBoxes;
+        }
+
+        if(page.getLanguage().equals(HINDI)){
+            return hindiBoxes;
+        }
+
+        if(page.getLanguage().equals(LATIN)){
+            return latinBoxes;
+        }
+
+        return null;
     }
 
     /**
@@ -113,8 +227,8 @@ public class ConceptVisualizer extends GraphicsProgram {
 
     /**
      * Returns the page at an x, y location
-     * @param x
-     * @param y
+     * @param x a double of the x-coordinate of the location.
+     * @param y a double of the y-coordinate of the location.
      * @return
      */
     private LocalPage getPageAt(double x, double y) {

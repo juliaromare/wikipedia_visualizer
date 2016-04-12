@@ -5,9 +5,7 @@ import org.wikapidia.core.dao.DaoException;
 import org.wikapidia.core.lang.Language;
 import org.wikapidia.core.model.LocalPage;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Analyzes the overlap in popular concepts.
@@ -27,26 +25,50 @@ public class PopularArticleAnalyzer {
         this.wpApi = wpApi;
     }
 
+
     /**
      * Returns the n most popular articles in the specified language.
-     * @param language
-     * @param n
-     * @return
+     * @param language the Language we want to the articles from.
+     * @param n an integer indicating the how many of the most popular articles we want.
+     * @return an ArrayList with the n most popular articles in a language.
      */
     public List<LocalPage> getMostPopular(Language language, int n) {
-        return null;    // TODO: implement me for part 1
+
+        List<LocalPage> popularity = new ArrayList<LocalPage>();
+
+        List<LocalPage> allLocalPages;
+        List<LocalPagePopularity> allLocalPagePopularity = new ArrayList<LocalPagePopularity>();
+
+        allLocalPages = wpApi.getLocalPages(language);
+
+        for(LocalPage localPage : allLocalPages){
+            int links = wpApi.getNumInLinks(localPage);
+            LocalPagePopularity localPagePop = new LocalPagePopularity(localPage, links);
+            allLocalPagePopularity.add(localPagePop);
+        }
+
+        Collections.sort(allLocalPagePopularity);
+        Collections.reverse(allLocalPagePopularity);
+
+        for(LocalPagePopularity locPagPop : allLocalPagePopularity.subList(0, n)) {
+            popularity.add(locPagPop.getPage());
+
+        }
+
+        return popularity;
     }
+
 
     public static void main(String args[]) {
         Language simple = Language.getByLangCode("simple");
 
-        // Change the path below to point to the parent directory on the lab computer
-        // or laptop that holds the BIG "db" directory.
         WikAPIdiaWrapper wrapper = new WikAPIdiaWrapper();
 
-        // TODO: Complete me for part 1.
-        // construct a PopularArticleAnalyzer
-        // Print out the 20 most popular articles in the language.
-        // United states should be #1
+        PopularArticleAnalyzer popArtAnalyzer = new PopularArticleAnalyzer(wrapper);
+        List<LocalPage> popLocalPages = popArtAnalyzer.getMostPopular(Language.getByLangCode("simple"),20);
+        for(LocalPage article: popLocalPages){
+            System.out.println(article.getTitle());
+        }
     }
+
 }

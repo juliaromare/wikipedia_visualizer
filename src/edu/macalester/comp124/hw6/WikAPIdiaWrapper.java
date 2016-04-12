@@ -29,7 +29,7 @@ public class WikAPIdiaWrapper {
 
     // The data directory for WikAPIdia. Change this so it is correct for your laptop
     // It should be the full path to either "wp-db-large" or "wp-db-small"
-    private static final String DATA_DIRECTORY = "/Users/shilad/Documents/IntelliJ/mac-wikAPIdia/wp-db-small";
+    private static final String DATA_DIRECTORY = "/Users/juliaromare/Documents/wp/wp-db-large";
 
     private static final int CONCEPT_ALGORITHM_ID = 1;
 
@@ -130,6 +130,7 @@ public class WikAPIdiaWrapper {
         }
         return links;
     }
+
 
     /**
      * Returns a list of ALL the local pages in a particular language.

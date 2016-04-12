@@ -24,6 +24,15 @@ public class LocalPagePopularity implements Comparable<LocalPagePopularity> {
 
     @Override
     public int compareTo(LocalPagePopularity localPagePopularity) {
-        return 0;   // TODO: implement me reasonably for Part 1.
+        if(numInLinks < localPagePopularity.numInLinks){
+            return -1;
+        }
+        else if(numInLinks > localPagePopularity.numInLinks){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+
     }
 }
